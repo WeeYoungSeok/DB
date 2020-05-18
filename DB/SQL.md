@@ -440,3 +440,34 @@ DROP TABLE ENTITY (PURGE);
 - JAVA와 마찬가지로 SQL에서도 A함수안에 B함수가 있을 경우
 
    B함수 실행하고 그 값으로 A함수 실행
+
+
+
+##### 단일 행 함수
+
+- 주요 단일 행 함수
+
+|      구분      | 입력값 타입 |                종류                 | 리턴값 타입 |
+| :------------: | :---------: | :---------------------------------: | :---------: |
+| 문자(열) 함수  |  CHARACTER  | LPAD/RPAD, LTRIM/RTRIM/TRIM, SUBSTR |  CHARACTER  |
+| 문자(열) 함수  |  CHARACTER  |        INSTR, LENGHT/LENGTHB        |   NUNBER    |
+|   숫자 함수    |   NUMBER    |            ROUND, TRUNC             |   NUMBER    |
+|   날짜 함수    |    DATE     |         ADD_MONTHS, SYSDATE         |    DATE     |
+|   날짜 함수    |    DATE     |           MONTHS_BETWEEN            |   NUMBER    |
+| 타입 변환 함수 |     ANY     |     TO_CHAR, TO_DATE, TO_NUMBER     |     ANY     |
+|   기타 함수    |     ANY     |             NVL, DECODE             |     ANY     |
+
+
+
+- LPAD/RPAD (컬럼명, 길이, 값)
+  - 해당 컬럼을 길이만큼 오른쪽/왼쪽 정렬한다.
+  - 빈 공간은 값을 채운다.
+
+```SQL
+--Q1 빈 자리에는 *을 넣어서 7자리만큼 오른쪽 정렬하자.
+SELECT LPAD(ENAME.7,'*') FROM EMP;
+
+--Q2 빈 자리에는 *을 넣어서 10자리만큼 왼쪽 정렬하자.
+SELECT RPAD(ENAME,10,'*') FROM EMP;
+```
+
