@@ -222,7 +222,7 @@ MAXVALUE가 OVERFLOW되면 START WITH값이 개발자가 지정해준 값이 아
 |  NOT NULL   |    해당 컬림에 NULL을 입력할 수 없도록    |     컬럼     |
 |   UNIQUE    | 해당 컬럼 또는 컬럼 조합 값이 유일하도록  | 컬럼, 테이블 |
 | PRIMARY KEY |     각 행을 유일하게 식별할 수 있도록     | 컬럼, 테이블 |
-|    CHECT    | 해당 컬럼에 특정 조건을 항상 만족시키도록 | 컬럼, 테이블 |
+|    CHECK    | 해당 컬럼에 특정 조건을 항상 만족시키도록 | 컬럼, 테이블 |
 
 
 
@@ -284,13 +284,113 @@ INSERT INTO TABLE_PK01 VALUES(NULL,'ORACLE',3);
 
 
 
+```SQL
+--FOREGN KEY
 
+CREATE TABLE TABLE_FK01(
+	ID CHAR(3) PRIMARY KEY,
+	NAME VARCHAR2(20),
+	PKID CHAR(3) REFERENCES TABLE_PK01(ID)
+);
+
+INSERT INTO TABLE_FK01 VALUES('123','ORACLE','100');
+INSERT INTO TABLE_FK01 VALUES('124','JAVA','200');
+INSERT INTO TABLE_FK01 VALUES('125','ORACLE','300');
+
+--3번째 구문 오류 TABLE_PK01에는 기본키로 300이 없음
+--외래키는 부모 테이블에도 값이 존재해야함
+
+CREATE TABLE TABLE_FK02(
+	ID CHAR(3) PRIMARY KEY,
+	PKID CHAR(3),
+	PKNAME VARCHAR2(20),
+	FOREIGN KEY(PKID,PKNAME) REFERENCES TABLE_PK02(ID,NAME)
+);
+
+INSERT INTO TABLE_FK02 VALUES('123','100','ORACLE');
+INSERT INTO TABLE_FK02 VALUES('124','200','JAVA');
+INSERT INTO TABLE_FK02 VALUES('125','300','ORACLE');
+
+--2,3번째 둘다 오류 
+--부모 테이블에 200과 300값이 없음
+
+
+```
+
+
+
+```SQL
+--CHECK
+
+CREATE TABLE TABLE_CHECK01(
+	EMP_ID CHAR(3) PRIMARY KEY,
+	NAME VARCHAR2(20),
+	MARRIAGE CHAR(1) CHECK(MARRIAGE IN('Y','N'))
+);
+
+INSERT INTO TABLE_CHECK01 VALUES('123','HONG','Y');
+INSERT INTO TABLE_CHECK01 VALUES('124','LEE','N');
+INSERT INTO TABLE_CHECK01 VALUES('125','KIM','A');
+
+--3번째 줄 오류 CHECK는 사용자가 지정해준 값만 들어갈 수 있음
+
+CREATE TABLE TABLE_CHECK02(
+	EMP_ID CHAR(3) PRIMARY KEY,
+	NAME VARCHAR2(20),
+	MARRIAGE CHAR(1) 
+    CONSTRAINT TC_CK CHECK(MARRIAGE IN('Y','N'))
+);
+
+INSERT INTO TABLE_CHECK01 VALUES('123','HONG','Y');
+INSERT INTO TABLE_CHECK01 VALUES('124','LEE','N');
+INSERT INTO TABLE_CHECK01 VALUES('125','KIM','A');
+
+--위의 코드와 같은 이유로 오류
+```
 
 
 
 - ALTER : 테이블, 뷰, 프로시저 등을 수정
 
+
+
+- 테이블 수정
+
+```SQL
+ALTER TABLE ENTITY
+-ADD(컬럼명 DATA_TYPE....)
+-MODIFY(컬럼명 DATA_TYPE...)
+-RENAME COLUMN 원래컬럼명 TO 바꿀컬럼명
+-DROP COLUMN 컬럼명||DROP(COLUMN)
+
+--ADD는 컬럼 추가
+--MODIFY는 컬럼의 타입 변경
+--RENAME은 컬럼의 이름 변경
+--DROP은 컬럼 삭제
+```
+
+
+
+- 시퀀스 수정
+
+```SQL
+ALTER SEQUENCE 시퀀스명
+[INCREMENT BY 정수(기본값1)]
+[{MAXVALUE 정수}][{MINVALUE 정수}]
+[{CYCLE|NOCYCLE}]
+[{CACHE 정수|NOCACHE}]
+
+
+-- *START WITH 값은 수정 불가
+```
+
+
+
 - DROP : 테이블, 뷰, 프로시저 등을 삭제
+
+```SQL
+DROP TABLE ENTITY (PURGE);
+```
 
 
 
@@ -333,3 +433,10 @@ INSERT INTO TABLE_PK01 VALUES(NULL,'ORACLE',3);
 
 
 
+##### 함수 중첩
+
+- 우리가 JAVA에서 배우듯이 A메소드안에 B메소드가 있을 경우 B메소드 먼저 실행 후 B메소드의 값이 A의 메소드 아규먼트로 들어감.
+
+- JAVA와 마찬가지로 SQL에서도 A함수안에 B함수가 있을 경우
+
+   B함수 실행하고 그 값으로 A함수 실행
